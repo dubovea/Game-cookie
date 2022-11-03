@@ -151,7 +151,7 @@ const Menu: React.FC = () => {
           color="secondary"
           aria-label="Always visible"
           defaultValue={0}
-          min={1}
+          min={0}
           max={5}
           step={1}
           marks={marksValues}

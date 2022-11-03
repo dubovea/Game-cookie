@@ -43,12 +43,14 @@ export class Game {
       isAscending = mode === "asc";
 
     if (
+      isAscending &&
       nearestItems.lo &&
       this.ruCollator.compare(value, nearestItems.lo.value) <= 0
     ) {
       return false;
     }
     if (
+      isAscending &&
       nearestItems.hi &&
       this.ruCollator.compare(value, nearestItems.hi.value) >= 0
     ) {

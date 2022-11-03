@@ -1,14 +1,19 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import victoryImg from "../../assets/images/victory.svg";
+import sound from "../../assets/sounds/victory.mp3";
+
 import Image from "next/image";
 import Link from "next/link";
 import { revertAll } from "../../redux/cookies/slice";
 import styled from "@emotion/styled";
+
 const Victory: React.FC = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    const audio = new Audio(sound);
+    audio.play();
     dispatch(revertAll());
   }, []);
 
