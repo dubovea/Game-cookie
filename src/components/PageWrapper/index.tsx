@@ -15,6 +15,9 @@ const PageWrapper: React.FC = () => {
   const { backgroundImg } = useSelector(layoutSelector);
 
   useEffect(() => {
+    if (backgroundImg) {
+      return;
+    }
     const randomImg = images[Math.floor(Math.random() * images.length)];
     dispatch(setBackgroundImg(randomImg));
   }, []);
