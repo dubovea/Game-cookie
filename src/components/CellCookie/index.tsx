@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { useDrop } from "react-dnd";
 import { useSelector, useDispatch } from "react-redux";
+import Router from "next/router";
 import styles from "./styles.module.scss";
 import Image from "next/image";
 import cell from "../../assets/palletes/cell.svg";
@@ -15,8 +16,15 @@ import { setDroppedCookies } from "../../redux/cookies/slice";
 const CellCookie: React.FC<any> = ({ position }) => {
   const game = useMemo(() => new Game(), []);
   const dispatch = useDispatch();
-  const { dropped, currentMode } = useSelector(cookieSelector),
+  const { dropped, currentMode, values } = useSelector(cookieSelector),
     oDropped = dropped.find((cookie) => cookie.position === position);
+  debugger;
+  if (dropped.length === values.length) {
+    const { pathname } = Router;
+    if (pathname == "/game") {
+      Router.push("/end");
+    }
+  }
   const [{ isOver, canDrop }, drop] = useDrop(
     () =>
       ({
