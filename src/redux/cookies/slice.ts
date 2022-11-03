@@ -1,11 +1,12 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { CookiesSliceState } from "./types";
+import { createSlice, createAction, PayloadAction } from "@reduxjs/toolkit";
+import { CookiesSliceState, Sorting } from "./types";
+export const revertAll = createAction("REVERT_ALL");
 
-const getRandomInt = (min, max) => {
+const getRandomInt = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-const getRandomRUHash = (max) => {
+const getRandomRUHash = (max: number) => {
   var i,
     result = "";
 
@@ -16,22 +17,17 @@ const getRandomRUHash = (max) => {
   return result.toUpperCase();
 };
 
-const fnNearestValue = (arr, val) => {
-  return arr.reduce((nearest, num) =>
-    Math.abs(num - val) >= Math.abs(nearest - val) && nearest < num
-      ? nearest
-      : num
-  );
-};
-
-const fnGetRandomIntInclusive = (min, max) => {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+const randomNumbers = (min: number, max: number, count: number) => {
+  let set = new Set();
+  while (set.size < count) {
+    let num = (Math.random() * (max - min + 1) + min) | 0;
+    set.add(num);
+  }
+  return [...set];
 };
 
 const initialState: CookiesSliceState = {
-  sortedMode: "asc",
+  sortedMode: Sorting.ASC,
   countItems: 2,
   defaultCountItems: 2,
   values: ["А", "Я"],
@@ -45,53 +41,53 @@ const initialState: CookiesSliceState = {
       min: 0,
       max: 0,
     },
-    9: {
+    1: {
       min: 1,
       max: 9,
     },
-    19: {
+    2: {
       min: 10,
       max: 19,
     },
-    50: {
+    3: {
       min: 20,
       max: 50,
     },
-    99: {
+    4: {
       min: 51,
       max: 99,
     },
-    999: {
+    5: {
       min: 100,
       max: 999,
     },
   },
 };
 
-export const ccookieSlice = createSlice({
+export const cookieSlice = createSlice({
   name: "cookie",
   initialState,
+  extraReducers: (builder) => builder.addCase(revertAll, () => initialState),
   reducers: {
     setCountItems: (state, action: PayloadAction<number>) => {
       state.countItems = action.payload;
       if (state.currentMode.min) {
-        state.values = Array.from(Array(action.payload)).map((_) =>
-          fnGetRandomIntInclusive(state.currentMode.min, state.currentMode.max)
+        state.values = randomNumbers(
+          state.currentMode.min,
+          state.currentMode.max,
+          action.payload
         );
       } else {
         state.values = getRandomRUHash(action.payload).split("");
       }
     },
     setRandomValues: (state, action: PayloadAction<number>) => {
-      const mode =
-          state.modes[fnNearestValue(Object.keys(state.modes), action.payload)],
+      const mode = state.modes[action.payload],
         min = mode.min,
         max = mode.max;
       state.currentMode = mode;
 
-      state.values = Array.from(Array(state.countItems)).map((_) =>
-        fnGetRandomIntInclusive(min, max)
-      );
+      state.values = randomNumbers(min, max, state.countItems);
     },
     setDroppedCookies: (state, action: PayloadAction<any>) => {
       state.dropped = [...state.dropped].concat(action.payload);
@@ -103,6 +99,6 @@ export const ccookieSlice = createSlice({
 });
 
 export const { setCountItems, setRandomValues, setDroppedCookies, setOrder } =
-  ccookieSlice.actions;
+  cookieSlice.actions;
 
-export default ccookieSlice.reducer;
+export default cookieSlice.reducer;

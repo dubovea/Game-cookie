@@ -3,23 +3,25 @@ import { useSelector, useDispatch } from "react-redux";
 
 import Image from "next/image";
 import styles from "./styles.module.scss";
-import layout1 from "../../assets/layouts/layout1.svg";
-import layout2 from "../../assets/layouts/layout2.svg";
-import layout3 from "../../assets/layouts/layout3.svg";
-import { layoutSelector } from "../../redux/layout/selectors";
-import { setBackgroundImg } from "../../redux/layout/slice";
+import { wrapperSelector } from "../../redux/wrapper/selectors";
+import {
+  setCurrentThemePath,
+  setBackgroundImg,
+} from "../../redux/wrapper/slice";
 
-const images = [layout1, layout2, layout3];
 const PageWrapper: React.FC = () => {
   const dispatch = useDispatch();
-  const { backgroundImg } = useSelector(layoutSelector);
+  const { backgroundImg, themes } = useSelector(wrapperSelector);
 
   useEffect(() => {
     if (backgroundImg) {
       return;
     }
-    const randomImg = images[Math.floor(Math.random() * images.length)];
-    dispatch(setBackgroundImg(randomImg));
+    const random = Math.floor(Math.random() * themes) + 1,
+      path = `theme${random}`;
+    const theme = require(`../../assets/images/themes/${path}/wrapper.svg`);
+    dispatch(setBackgroundImg(theme));
+    dispatch(setCurrentThemePath(path));
   }, []);
 
   if (!backgroundImg) {

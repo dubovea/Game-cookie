@@ -13,34 +13,34 @@ import {
   setOrder,
 } from "../../redux/cookies/slice";
 import { cookieSelector } from "../../redux/cookies/selectors";
-import { layoutSelector } from "../../redux/layout/selectors";
+import { wrapperSelector } from "../../redux/wrapper/selectors";
 
 const Menu: React.FC = () => {
   const dispatch = useDispatch();
   const { sortedMode, defaultCountItems } = useSelector(cookieSelector);
-  const { sound } = useSelector(layoutSelector);
+  const { sound } = useSelector(wrapperSelector);
 
-  const handleChangeCountItems = (target) => {
+  const handleChangeCountItems = (target: any) => {
     dispatch(setCountItems(target.value));
   };
 
-  const handleChangeValues = (target) => {
+  const handleChangeValues = (target: any) => {
     dispatch(setRandomValues(target.value));
   };
 
-  const handleOrder = (type) => {
+  const handleOrder = (type: string) => {
     dispatch(setOrder(type));
   };
 
   const fireSound = () => {
-    var audio = new Audio(sound);
-    // audio.play();
+    const audio = new Audio(sound);
+    audio.play();
   };
 
   const Label1 = styled.b`
     font-family: "Helvetica";
     font-style: normal;
-    font-weight: 400;
+    font-weight: 700;
     font-size: 32px;
     line-height: 44px;
     display: flex;
@@ -52,15 +52,16 @@ const Menu: React.FC = () => {
     width: 260px;
     height: 60px;
     color: white;
+    font-style: normal;
+    font-weight: 700;
     background: #38df7a;
     font-size: 32px;
     border-radius: 20px;
     border-color: #38df7a;
   `;
   const BtnAscDesc = styled.button`
-    width: 260px;
+    width: 280px;
     height: 60px;
-    font-family: "Calibri";
     font-style: normal;
     font-weight: 700;
     font-size: 32px;
@@ -70,29 +71,33 @@ const Menu: React.FC = () => {
     background: #ffd748;
   `;
 
-  const marks = [
+  const marksValues = [
     {
       value: 0,
       label: "A",
     },
     {
-      value: 9,
+      value: 1,
       label: 9,
     },
     {
-      value: 19,
+      value: 2,
       label: 19,
     },
     {
-      value: 50,
+      value: 3,
       label: 50,
     },
     {
-      value: 99,
+      value: 4,
       label: 99,
     },
+    {
+      value: 5,
+      label: 999,
+    },
   ];
-  const marks1 = [
+  const marksCounts = [
     {
       value: 2,
       label: 2,
@@ -118,52 +123,59 @@ const Menu: React.FC = () => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          p: 2,
-          m: 3,
-          borderRadius: 1,
+          p: 6,
         }}
       >
         <Label1>Кол-во предметов</Label1>
         <Slider
+          sx={{
+            color: "#FFD748",
+            width: 350,
+            height: "15px",
+          }}
           onChange={(e) => handleChangeCountItems(e.target)}
-          color="secondary"
           aria-label="Always visible"
           defaultValue={defaultCountItems}
           min={2}
           max={5}
           step={1}
-          marks={marks1}
-          valueLabelDisplay="on"
+          marks={marksCounts}
         />
         <Label1>Значения</Label1>
         <Slider
+          sx={{
+            color: "#FFD748",
+            height: "15px",
+          }}
           onChange={(e) => handleChangeValues(e.target)}
           color="secondary"
           aria-label="Always visible"
           defaultValue={0}
-          step={10}
-          marks={marks}
-          valueLabelDisplay="on"
+          min={1}
+          max={5}
+          step={1}
+          marks={marksValues}
         />
         <div style={{ width: "100%" }}>
           <Box
             sx={{
               display: "flex",
               flexDirection: "row",
-              alignItems: "center",
               justifyContent: "space-between",
-              m: 5,
+              paddingTop: "40px",
+              width: "600px",
+              height: "120px",
             }}
           >
             <BtnAscDesc
-              style={{ opacity: sortedMode === "asc" ? 1 : 0.5 }}
-              onClick={() => handleOrder("asc")}
+              style={{ opacity: sortedMode === "desc" ? 1 : 0.5 }}
+              onClick={() => handleOrder("desc")}
             >
               По убыванию
             </BtnAscDesc>
             <BtnAscDesc
-              style={{ opacity: sortedMode === "desc" ? 1 : 0.5 }}
-              onClick={() => handleOrder("desc")}
+              style={{ opacity: sortedMode === "asc" ? 1 : 0.5 }}
+              onClick={() => handleOrder("asc")}
             >
               По возрастанию
             </BtnAscDesc>
@@ -174,7 +186,6 @@ const Menu: React.FC = () => {
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "center",
-              m: 7,
             }}
           >
             <Link href="/game">

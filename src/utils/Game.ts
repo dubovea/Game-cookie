@@ -1,38 +1,92 @@
+type DropType = {
+  dropped: number[];
+  position: number;
+  value: any;
+  mode: string;
+};
+
 export class Game {
   ruCollator = new Intl.Collator("ru-RU");
-  nearestItem(dropped, position) {
-    return dropped.reduce((prev, curr) =>
-      Math.abs(curr.position - position) < Math.abs(prev.position - position)
-        ? curr
-        : prev
-    );
+
+  findClosest(settings: any) {
+    var lo = -Infinity,
+      hi = Infinity,
+      arr = settings.arr.map((o: { position: number }) => o.position),
+      valueToFind = settings.valueToFind,
+      result;
+
+    for (var i = 0; i < arr.length; i++) {
+      if (arr[i] <= valueToFind && arr[i] >= lo) {
+        lo = arr[i];
+        continue;
+      }
+
+      if (arr[i] >= valueToFind && arr[i] <= hi) {
+        hi = arr[i];
+      }
+    }
+
+    result = {
+      lo: settings.arr.find((o: { position: number }) => o.position === lo),
+      hi: settings.arr.find((o: { position: number }) => o.position === hi),
+    };
+
+    return result;
   }
-  canDropSymbol(params) {
-    const { dropped, position, value } = { ...params } as any;
-    const nearestItem = this.nearestItem(dropped, position);
+
+  canDropSymbol(params: DropType) {
+    const { dropped, position, value, mode } = { ...params } as DropType;
+    const nearestItems = this.findClosest({
+        arr: dropped,
+        valueToFind: position,
+      }),
+      isAscending = mode === "asc";
+
     if (
-      position < nearestItem.position &&
-      this.ruCollator.compare(value, nearestItem.value) > -1
+      nearestItems.lo &&
+      this.ruCollator.compare(value, nearestItems.lo.value) <= 0
     ) {
       return false;
     }
     if (
-      position > nearestItem.position &&
-      this.ruCollator.compare(value, nearestItem.value) === -1
+      nearestItems.hi &&
+      this.ruCollator.compare(value, nearestItems.hi.value) >= 0
+    ) {
+      return false;
+    }
+    if (
+      !isAscending &&
+      nearestItems.lo &&
+      this.ruCollator.compare(value, nearestItems.lo.value) >= 0
+    ) {
+      return false;
+    }
+    if (
+      !isAscending &&
+      nearestItems.hi &&
+      this.ruCollator.compare(value, nearestItems.hi.value) <= 0
     ) {
       return false;
     }
     return true;
   }
-  canDropNumeric(params) {
-    const { dropped, position, value } = { ...params } as any;
-    const nearestItem = this.nearestItem(dropped, position);
-    console.log("value" + value);
-    console.log("nearestItem" + nearestItem.value);
-    if (position < nearestItem.position && value > nearestItem.value) {
+  canDropNumeric(params: DropType) {
+    const { dropped, position, value, mode } = { ...params } as DropType;
+    const nearestItems = this.findClosest({
+        arr: dropped,
+        valueToFind: position,
+      }),
+      isAscending = mode === "asc";
+    if (isAscending && nearestItems.lo && value <= nearestItems.lo.value) {
       return false;
     }
-    if (position > nearestItem.position && value < nearestItem.value) {
+    if (isAscending && nearestItems.hi && value >= nearestItems.hi.value) {
+      return false;
+    }
+    if (!isAscending && nearestItems.lo && value >= nearestItems.lo.value) {
+      return false;
+    }
+    if (!isAscending && nearestItems.hi && value <= nearestItems.hi.value) {
       return false;
     }
     return true;

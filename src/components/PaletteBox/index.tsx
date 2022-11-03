@@ -1,18 +1,19 @@
 import React from "react";
 
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 import Image from "next/image";
 import Grid from "@mui/material/Grid";
 
 import styles from "./styles.module.scss";
-import pallete5 from "../../assets/palletes/pallete5.svg";
 
 import { cookieSelector } from "../../redux/cookies/selectors";
+import { wrapperSelector } from "../../redux/wrapper/selectors";
 import CellCookie from "../CellCookie";
 
 const PaletteBox: React.FC = () => {
-  const { countItems } = useSelector(cookieSelector);
+  const { countItems } = useSelector(cookieSelector),
+    { themePath } = useSelector(wrapperSelector);
 
   return (
     <div className={styles.center_bottom}>
@@ -32,7 +33,7 @@ const PaletteBox: React.FC = () => {
         className={styles.centered}
         alt="travel"
         quality={100}
-        src={pallete5}
+        src={require(`../../assets/images/themes/${themePath}/pallete.svg`)}
       />
     </div>
   );

@@ -1,12 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 import cookies from "./cookies/slice";
-import layout from "./layout/slice";
+import wrapper from "./wrapper/slice";
 import { useDispatch } from "react-redux";
 
 export const store = configureStore({
   reducer: {
     cookies,
-    layout,
+    wrapper,
   },
 });
 

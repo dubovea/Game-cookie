@@ -4,32 +4,44 @@ import { useSelector, useDispatch } from "react-redux";
 import Router from "next/router";
 import styles from "./styles.module.scss";
 import Image from "next/image";
-import cell from "../../assets/palletes/cell.svg";
-import smallcookie from "../../assets/cookies/smallcookie.svg";
+import cellImg from "../../assets/images/cell.svg";
 
 import { Game } from "../../utils/Game.ts";
 
 import { cookieSelector } from "../../redux/cookies/selectors";
+import { wrapperSelector } from "../../redux/wrapper/selectors";
 
 import { setDroppedCookies } from "../../redux/cookies/slice";
 
-const CellCookie: React.FC<any> = ({ position }) => {
+import sound from "../../assets/sounds/click.mp3";
+
+type MonitorType = {
+  value: string;
+  isOver: () => boolean;
+  canDrop: () => boolean;
+};
+
+const CellCookie: React.FC<{ position: number }> = ({ position }) => {
   const game = useMemo(() => new Game(), []);
   const dispatch = useDispatch();
-  const { dropped, currentMode, values } = useSelector(cookieSelector),
+  const { sortedMode, dropped, currentMode, values } =
+      useSelector(cookieSelector),
+    { themePath } = useSelector(wrapperSelector),
     oDropped = dropped.find((cookie) => cookie.position === position);
-  debugger;
   if (dropped.length === values.length) {
     const { pathname } = Router;
     if (pathname == "/game") {
       Router.push("/end");
     }
   }
-  const [{ isOver, canDrop }, drop] = useDrop(
+
+  const [{ isOver }, drop] = useDrop(
     () =>
       ({
         accept: "cookie",
-        drop: (monitor) => {
+        drop: (monitor: MonitorType) => {
+          const audio = new Audio(sound);
+          audio.play();
           dispatch(
             setDroppedCookies({
               position: position,
@@ -37,7 +49,7 @@ const CellCookie: React.FC<any> = ({ position }) => {
             })
           );
         },
-        canDrop: (monitor) => {
+        canDrop: (monitor: MonitorType) => {
           if (!dropped.length) {
             return true;
           }
@@ -45,6 +57,7 @@ const CellCookie: React.FC<any> = ({ position }) => {
             dropped: dropped,
             position: position,
             value: monitor.value,
+            mode: sortedMode,
           };
           //Кириллица
           if (currentMode.min === 0) {
@@ -52,7 +65,7 @@ const CellCookie: React.FC<any> = ({ position }) => {
           }
           return game.canDropNumeric(params);
         },
-        collect: (monitor) => ({
+        collect: (monitor: MonitorType) => ({
           isOver: !!monitor.isOver(),
           canDrop: !!monitor.canDrop(),
         }),
@@ -71,11 +84,14 @@ const CellCookie: React.FC<any> = ({ position }) => {
             borderRadius: "70px",
           }}
           alt="travel"
-          src={cell}
+          src={cellImg}
         />
       ) : (
         <div className={styles.container}>
-          <Image alt="travel1" src={smallcookie} />
+          <Image
+            alt="travel1"
+            src={require(`../../assets/images/themes/${themePath}/cookies/drop/cookie.svg`)}
+          />
           <div className={styles.centered}>{oDropped.value}</div>
         </div>
       )}

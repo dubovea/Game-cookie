@@ -3,8 +3,8 @@ import { useSelector } from "react-redux";
 
 import Image from "next/image";
 import styles from "./styles.module.scss";
-import arrowAsc from "../../assets/layouts/arrowAsc.svg";
-import arrowDesc from "../../assets/layouts/arrowDesc.svg";
+import arrowAsc from "../../assets/images/arrows/arrowAsc.svg";
+import arrowDesc from "../../assets/images/arrows/arrowDesc.svg";
 import { cookieSelector } from "../../redux/cookies/selectors";
 
 const Arrow: React.FC = () => {

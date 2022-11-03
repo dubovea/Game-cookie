@@ -16,3 +16,8 @@ export interface CookiesSliceState {
   dropped: DroppedCookie[];
   modes: object;
 }
+
+export enum Sorting {
+  ASC = "asc",
+  DESC = "desc",
+}
